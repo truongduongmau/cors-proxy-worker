@@ -1,28 +1,44 @@
 export default {
   async fetch(request) {
 
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+      "Access-Control-Allow-Headers": "*",
+    }
+
+    // xử lý preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: corsHeaders
+      })
+    }
+
     const url = new URL(request.url)
     const target = url.searchParams.get("url")
 
     if (!target) {
-      return new Response("Missing url param", { status: 400 })
+      return new Response("Missing url param", {
+        status: 400,
+        headers: corsHeaders
+      })
     }
 
-    const apiResponse = await fetch(target, {
+    const response = await fetch(target, {
       method: request.method,
       headers: request.headers,
       body: request.body
     })
 
-    const newHeaders = new Headers(apiResponse.headers)
+    const headers = new Headers(response.headers)
 
-    newHeaders.set("Access-Control-Allow-Origin", "*")
-    newHeaders.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-    newHeaders.set("Access-Control-Allow-Headers", "*")
+    Object.entries(corsHeaders).forEach(([k, v]) => {
+      headers.set(k, v)
+    })
 
-    return new Response(apiResponse.body, {
-      status: apiResponse.status,
-      headers: newHeaders
+    return new Response(response.body, {
+      status: response.status,
+      headers
     })
   }
 }
