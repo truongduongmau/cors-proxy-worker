@@ -27,7 +27,7 @@ export default {
 
     const response = await fetch(target, {
       method: request.method,
-      headers: request.headers,
+      headers: {...Object.fromEntries(request.headers) , ...corsHeaders},
       body: request.body,
       cf: { cacheTtl: 0 }
     })
