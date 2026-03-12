@@ -5,6 +5,7 @@ export default {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
       "Access-Control-Allow-Headers": "*",
+      "Cache-Control": "no-store"
     }
 
     // xử lý preflight
@@ -27,7 +28,8 @@ export default {
     const response = await fetch(target, {
       method: request.method,
       headers: request.headers,
-      body: request.body
+      body: request.body,
+      cf: { cacheTtl: 0 }
     })
 
     const headers = new Headers(response.headers)
